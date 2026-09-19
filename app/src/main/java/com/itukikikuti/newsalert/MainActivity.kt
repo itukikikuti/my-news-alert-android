@@ -1,12 +1,16 @@
 package com.itukikikuti.newsalert
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var webView: WebView
+    private lateinit var tokenView: TextView
 
     private val requestNotifications =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -33,6 +38,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         webView = findViewById(R.id.webView)
+        tokenView = findViewById(R.id.tokenView)
         setupWebView()
 
         // Ask for notification permission on Android 13+.
@@ -44,19 +50,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Retrieve the FCM token at startup so it can be used for setup.
+        // Retrieve the FCM token at startup and show it so it can be pasted
+        // into the server's admin UI. Tapping the token copies it.
         FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                val token = task.result
                 getSharedPreferences(Prefs.PREFS, MODE_PRIVATE)
                     .edit()
-                    .putString(Prefs.KEY_FCM_TOKEN, task.result)
+                    .putString(Prefs.KEY_FCM_TOKEN, token)
                     .apply()
+                showToken(token)
+            } else {
+                tokenView.text = "FCMトークンの取得に失敗しました"
             }
         }
 
         // Load either the URL from the tapped notification or the admin UI.
         val target = intent.getStringExtra(Extras.EXTRA_URL) ?: DEFAULT_ADMIN_URL
         webView.loadUrl(target)
+    }
+
+    private fun showToken(token: String) {
+        tokenView.text = "FCMトークン（タップでコピー）:\n$token"
+        tokenView.setOnClickListener {
+            val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText("FCM token", token))
+            Toast.makeText(this, "トークンをコピーしました", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
