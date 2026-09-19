@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1019186518252",
+    "project_id": "news-alert-81953",
+    "storage_bucket": "news-alert-81953.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019186518252:android:af800e9279f55dc377edc9",
+        "android_client_info": {
+          "package_name": "com.itukikikuti.newsalert"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDinc2Knkv-cZcghR8EVkmYN1XPRhacyFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

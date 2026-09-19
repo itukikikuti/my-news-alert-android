@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">News Alert</string>
+    <string name="notification_channel_name">ニュース通知</string>
+    <string name="notification_channel_desc">新着ニュース記事の通知</string>
+</resources>
