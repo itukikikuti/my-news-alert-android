@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.webkit.CookieManager
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.TextView
@@ -15,16 +16,19 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        private const val DEFAULT_ADMIN_URL = "http://10.0.0.99:3334/"
+        private const val DEFAULT_ADMIN_URL = "https://news.itukikikuti.com/"
     }
 
     private lateinit var webView: WebView
     private lateinit var tokenView: TextView
+    private lateinit var progressBar: android.widget.ProgressBar
 
     private val requestNotifications =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -39,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         webView = findViewById(R.id.webView)
         tokenView = findViewById(R.id.tokenView)
+        progressBar = findViewById(R.id.progressBar)
         setupWebView()
 
         // Ask for notification permission on Android 13+.
@@ -65,9 +70,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Load either the URL from the tapped notification or the admin UI.
+        // Obtain the Cloudflare Access cookie, then load the admin UI. The
+        // cookie is injected into WebView so page navigations and sub-resource
+        // loads pass Access without an interactive login.
         val target = intent.getStringExtra(Extras.EXTRA_URL) ?: DEFAULT_ADMIN_URL
-        webView.loadUrl(target)
+        lifecycleScope.launch {
+            prepareAccessCookie()
+            webView.loadUrl(target)
+        }
+    }
+
+    private suspend fun prepareAccessCookie() {
+        val host = AccessAuth.ACCESS_HOST
+        if (host.isBlank()) return
+        try {
+            val cookie = AccessCookieFetcher.fetchCookie(this, host)
+            if (!cookie.isNullOrBlank()) {
+                AccessCookieFetcher.injectCookie(host, cookie)
+            }
+        } catch (e: Exception) {
+            // Non-fatal: the WebView will fall back to the Access login page.
+        }
     }
 
     private fun showToken(token: String) {
@@ -86,13 +109,30 @@ class MainActivity : AppCompatActivity() {
 
     @Suppress("SetJavaScriptEnabled")
     private fun setupWebView() {
+        CookieManager.getInstance().setAcceptCookie(true)
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
             loadWithOverviewMode = true
             useWideViewPort = true
         }
-        webView.webViewClient = WebViewClient()
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                progressBar.visibility = android.view.View.VISIBLE
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                progressBar.visibility = android.view.View.GONE
+            }
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: android.webkit.WebResourceRequest?,
+                error: android.webkit.WebResourceError?
+            ) {
+                progressBar.visibility = android.view.View.GONE
+            }
+        }
     }
 
     override fun onBackPressed() {
