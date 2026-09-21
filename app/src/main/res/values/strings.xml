@@ -2,4 +2,7 @@
     <string name="app_name">News Alert</string>
     <string name="notification_channel_name">ニュース通知</string>
     <string name="notification_channel_desc">新着ニュース記事の通知</string>
+    <string name="token_button">端末ID</string>
+    <string name="token_hint">FCMトークン（タップでコピー）— サーバー側の通知設定に使用します</string>
+    <string name="token_loading">FCMトークンを取得中…</string>
 </resources>

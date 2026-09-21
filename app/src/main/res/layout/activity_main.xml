@@ -2,19 +2,76 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#0f1115">
 
-    <TextView
-        android:id="@+id/tokenView"
+    <!-- Compact top bar: app name + a collapsible dev token strip, so the
+         WebView gets nearly the whole screen. -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#EEF3FF"
-        android:padding="10dp"
-        android:textSize="11sp"
-        android:textIsSelectable="true"
-        android:maxLines="4"
-        android:ellipsize="middle"
-        android:text="FCMトークンを取得中…" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="#171a21"
+        android:paddingStart="14dp"
+        android:paddingEnd="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/app_name"
+            android:textColor="#e6e9ef"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/tokenToggleBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:text="@string/token_button"
+            android:textSize="12sp"
+            android:textColor="#e6e9ef"
+            android:background="#2a2f3a" />
+    </LinearLayout>
+
+    <!-- Token strip: hidden until the user taps the button above. -->
+    <LinearLayout
+        android:id="@+id/tokenPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#1e222b"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/token_hint"
+            android:textColor="#9aa4b2"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/tokenView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="#e6e9ef"
+            android:textSize="11sp"
+            android:textIsSelectable="true"
+            android:maxLines="4"
+            android:ellipsize="middle"
+            android:text="@string/token_loading" />
+    </LinearLayout>
 
     <FrameLayout
         android:layout_width="match_parent"

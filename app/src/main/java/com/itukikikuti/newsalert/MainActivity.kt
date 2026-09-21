@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var webView: WebView
     private lateinit var tokenView: TextView
     private lateinit var progressBar: android.widget.ProgressBar
+    private lateinit var tokenPanel: android.view.View
+    private lateinit var tokenToggleBtn: android.widget.Button
 
     private val requestNotifications =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -44,7 +46,16 @@ class MainActivity : AppCompatActivity() {
         webView = findViewById(R.id.webView)
         tokenView = findViewById(R.id.tokenView)
         progressBar = findViewById(R.id.progressBar)
+        tokenPanel = findViewById(R.id.tokenPanel)
+        tokenToggleBtn = findViewById(R.id.tokenToggleBtn)
         setupWebView()
+
+        // Token strip starts hidden to keep the WebView full-height; the button
+        // in the top bar toggles it.
+        tokenToggleBtn.setOnClickListener {
+            val show = tokenPanel.visibility != android.view.View.VISIBLE
+            tokenPanel.visibility = if (show) android.view.View.VISIBLE else android.view.View.GONE
+        }
 
         // Ask for notification permission on Android 13+.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -94,7 +105,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showToken(token: String) {
-        tokenView.text = "FCMトークン（タップでコピー）:\n$token"
+        tokenView.text = token
         tokenView.setOnClickListener {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("FCM token", token))
