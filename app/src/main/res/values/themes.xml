@@ -2,5 +2,7 @@
     <style name="Theme.NewsAlert" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">#0070f3</item>
         <item name="colorOnPrimary">#ffffff</item>
+        <item name="android:statusBarColor">#171a21</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

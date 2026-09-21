@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:fitsSystemWindows="true"
     android:background="#0f1115">
 
     <!-- Compact top bar: app name + a collapsible dev token strip, so the
@@ -15,8 +16,8 @@
         android:background="#171a21"
         android:paddingStart="14dp"
         android:paddingEnd="6dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp">
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:layout_width="0dp"
